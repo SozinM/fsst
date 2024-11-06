@@ -9,6 +9,7 @@ macro_rules! assert_sizeof {
 }
 
 use lossy_pht::LossyPHT;
+use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Formatter};
 
 mod builder;
@@ -18,7 +19,7 @@ pub use builder::*;
 
 /// `Symbol`s are small (up to 8-byte) segments of strings, stored in a [`Compressor`][`crate::Compressor`] and
 /// identified by an 8-bit code.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Serialize, Deserialize)]
 pub struct Symbol(u64);
 
 assert_sizeof!(Symbol => 8);
@@ -147,7 +148,7 @@ impl Debug for Symbol {
 /// a placeholder for the invalid code here.
 ///
 /// Bits 12-15 store the length of the symbol (values ranging from 0-8).
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 struct Code(u16);
 
 /// Code used to indicate bytes that are not in the symbol table.
@@ -225,9 +226,32 @@ impl Debug for Code {
     }
 }
 
+/// Owned version of decompressor to instantiate Decompressor without compressor instance.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OwnedDecompressor {
+
+    /// Vec mapping codes to symbols.
+    pub(crate) symbols: Vec<Symbol>,
+
+    /// Vec containing the length of each symbol in the `symbols` slice.
+    pub(crate) lengths: Vec<u8>,
+}
+
+impl OwnedDecompressor {
+    /// Returns borrowed version of decompressor
+    /// TODO: This function is used solely because we need to implement decompress method for owned decompressor
+    pub fn to_decompressor(&self) -> Decompressor {
+        Decompressor{
+            symbols: self.symbols.as_slice(),
+            lengths: self.lengths.as_slice(),
+        }
+    }
+}
+
 /// Decompressor uses a symbol table to take a stream of 8-bit codes into a string.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Decompressor<'a> {
+
     /// Slice mapping codes to symbols.
     pub(crate) symbols: &'a [Symbol],
 
@@ -301,6 +325,14 @@ impl<'a> Decompressor<'a> {
 
         decoded
     }
+
+    /// Clones decompressor into owned version to be stored and used later
+    pub fn to_owned(&self) -> OwnedDecompressor {
+        OwnedDecompressor{
+            symbols: self.symbols.to_vec(),
+            lengths: self.lengths.to_vec(),
+        }
+    }
 }
 
 /// A compressor that uses a symbol table to greedily compress strings.
@@ -321,7 +353,7 @@ impl<'a> Decompressor<'a> {
 /// let compressed = compressor.compress("hello".as_bytes());
 /// assert_eq!(compressed, vec![0u8]);
 /// ```
-#[derive(Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Compressor {
     /// Table mapping codes to symbols.
     pub(crate) symbols: Vec<Symbol>,

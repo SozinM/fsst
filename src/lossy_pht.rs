@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-
+use serde::{Deserialize, Serialize};
 use crate::builder::fsst_hash;
 use crate::Code;
 use crate::Symbol;
@@ -15,7 +15,7 @@ pub const HASH_TABLE_SIZE: usize = 1 << 11;
 ///
 /// `TableEntry` is based on the `Symbol` class outlined in Algorithm 4 of the FSST paper. See
 /// the module documentation for a link to the paper.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[repr(C)]
 pub(crate) struct TableEntry {
     /// Symbol, piece of a string, 8 bytes or fewer.
@@ -50,7 +50,7 @@ impl TableEntry {
 /// we can say that any failed insert is not a big loss, because its slot is being held by a higher-gain
 /// symbol. Note that because other code in this crate calls `insert` in the pop-order of a max heap,
 /// this holds.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub(crate) struct LossyPHT {
     /// Hash table slots. Used for strings that are 3 bytes or more.
     slots: Vec<TableEntry>,

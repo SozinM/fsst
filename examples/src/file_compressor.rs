@@ -8,6 +8,8 @@
 //! ```
 //! cargo run --release --example file_compressor -- lineitem.tbl
 //! ```
+
+
 use std::{
     fs::File,
     io::Read,

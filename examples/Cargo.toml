@@ -1,0 +1,42 @@
+[package]
+name = "fsst-rs-examples"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+bincode = "1.3.3"
+
+[dependencies.fsst-rs]
+path = ".."
+
+[[bin]]
+name = "file_compressor"
+path = "src/file_compressor.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "round_trip"
+path = "src/round_trip.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "file_decompressor_serialization"
+path = "src/file_decompressor_serialization.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "file_compressor_serialization"
+path = "src/file_compressor_serialization.rs"
+test = false
+doc = false
+bench = false

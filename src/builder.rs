@@ -66,6 +66,7 @@ impl CodesBitmap {
     }
 }
 
+#[derive(Clone, Debug)]
 struct CodesIterator<'a> {
     inner: &'a CodesBitmap,
     index: usize,
