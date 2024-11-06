@@ -229,7 +229,6 @@ impl Debug for Code {
 /// Owned version of decompressor to instantiate Decompressor without compressor instance.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OwnedDecompressor {
-
     /// Vec mapping codes to symbols.
     pub(crate) symbols: Vec<Symbol>,
 
@@ -241,7 +240,7 @@ impl OwnedDecompressor {
     /// Returns borrowed version of decompressor
     /// TODO: This function is used solely because we need to implement decompress method for owned decompressor
     pub fn to_decompressor(&self) -> Decompressor {
-        Decompressor{
+        Decompressor {
             symbols: self.symbols.as_slice(),
             lengths: self.lengths.as_slice(),
         }
@@ -251,7 +250,6 @@ impl OwnedDecompressor {
 /// Decompressor uses a symbol table to take a stream of 8-bit codes into a string.
 #[derive(Debug, Clone)]
 pub struct Decompressor<'a> {
-
     /// Slice mapping codes to symbols.
     pub(crate) symbols: &'a [Symbol],
 
@@ -328,7 +326,7 @@ impl<'a> Decompressor<'a> {
 
     /// Clones decompressor into owned version to be stored and used later
     pub fn to_owned(&self) -> OwnedDecompressor {
-        OwnedDecompressor{
+        OwnedDecompressor {
             symbols: self.symbols.to_vec(),
             lengths: self.lengths.to_vec(),
         }

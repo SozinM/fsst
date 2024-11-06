@@ -1,8 +1,8 @@
-use std::fmt::Debug;
-use serde::{Deserialize, Serialize};
 use crate::builder::fsst_hash;
 use crate::Code;
 use crate::Symbol;
+use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
 
 /// Size of the perfect hash table.
 ///
